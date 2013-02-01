@@ -98,7 +98,6 @@ while (!defined($result = $game->result())) {
 		my $new = Chess::GamePos->new($game);
 		my $current_game = Games::AlphaBeta->new($new);
 		print $current_game->abmove();
-		print "Typcho";
 	}
 
 	$i++;
