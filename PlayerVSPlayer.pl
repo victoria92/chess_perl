@@ -14,6 +14,26 @@ my %coords;
 my $mw = Tkx::widget->new(".");
 $mw->g_wm_title("My chess");
 
+my $canvas = $mw->new_tk__canvas(-width => 500, -height => 500);
+$canvas->g_grid(-column=>0, -row=>0, -sticky=>"nwes");
+$mw->g_grid_columnconfigure(0, -weight=>1);
+$mw->g_grid_rowconfigure(0, -weight=>1);
+
+$canvas->g_bind("<1>", [sub {my ($x,$y) = @_; $lastx=25 + $x - $x % 50; $lasty=25 + $y - $y % 50; set_color($x, $y)}, Tkx::Ev("%x","%y")]);
+$canvas->g_bind("<ButtonRelease-1>", [sub {my ($x, $y) = @_; check_place($x, $y)}, Tkx::Ev("%x", "%y")]); #chech if move is legal
+
+for(my $i = 1; $i < 9; $i+=1) {
+	for(my $j = 1; $j < 9; $j+=1) {
+		if(($i + $j) % 2) {
+			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#8b4513");
+		}
+		else {
+			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#eedd82");
+		}
+
+	}
+}
+
 #black pieces
 Tkx::image_create_photo("black_rook1", -file => "rook_b.gif", -width => 45, -height => 45);
 Tkx::image_create_photo("black_knight1", -file => "horse_b.gif", -width => 45, -height => 45);
@@ -122,26 +142,6 @@ my $message = "White's are first";
 my $em = $mw->new_ttk__label(-textvariable => \$message);
 $em->g_grid(-column => 0, -row => 1, -sticky => "we");
 
-my $canvas = $mw->new_tk__canvas(-width => 500, -height => 500);
-$canvas->g_grid(-column=>0, -row=>0, -sticky=>"nwes");
-$mw->g_grid_columnconfigure(0, -weight=>1);
-$mw->g_grid_rowconfigure(0, -weight=>1);
-
-$canvas->g_bind("<1>", [sub {my ($x,$y) = @_; $lastx=25 + $x - $x % 50; $lasty=25 + $y - $y % 50;}, Tkx::Ev("%x","%y")]);
-$canvas->g_bind("<ButtonRelease-1>", [sub {my ($x, $y) = @_; check_place($x, $y)}, Tkx::Ev("%x", "%y")]); #chech if move is legal
-
-for(my $i = 1; $i < 9; $i+=1) {
-  for(my $j = 1; $j < 9; $j+=1) {
-		if(($i + $j) % 2) {
-			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#8b4513");
-		}
-		else {
-			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#eedd82");
-		}
-
-	}
-}
-
 my %coords_to_square = (
 	"75 75", "a8", "125 75", "b8", "175 75", "c8", "225 75", "d8", "275 75", "e8", "325 75", "f8", "375 75", "g8", "425 75", "h8",
 	"75 125", "a7", "125 125", "b7", "175 125", "c7", "225 125", "d7", "275 125", "e7", "325 125", "f7", "375 125", "g7", "425 125", "h7",
@@ -157,6 +157,16 @@ my %square_to_coords;
 
 while ((my $coords, my $square) = each %coords_to_square) {
 	$square_to_coords{$square} = $coords;
+}
+
+sub set_color {
+	my($x, $y) = @_;
+	# my $board = $game->get_board();
+	# my $piece = $board->get_piece_at($coords_to_square{join ' ', $x, $y});
+	# for my $square ($piece->reachable_squares()) {
+	# 	($a, $b) = split ' ', $square_to_coords{$square};
+
+	# }
 }
 
 sub check_place {
@@ -214,7 +224,19 @@ sub check_place {
 	$coords{join ' ', $lastx, $lasty} = nil;
 	$coords{join ' ', $x, $y} = $figure;
 
+#PROMOTION
+	# if($figure =~ /pawn/ and ($y == 75 or $y == 425)) {
+	# 	#$figure =~ s/pawn/queen/;
+	# 	#$color = $figure =~ /_w/ ? "white" : "black";
+	# 	Tkx::image_create_photo("new_queen", -file => "queen_w.gif", -width => 45, -height => 45); #samo bqla pravi!!!
+	# 	$canvas->create_image($x, $y, -anchor => "center", -image => "new_queen", -tag => "new_queen");
+	# 	$canvas->move($figure, 1000, 1000);
+	# 	$game->do_promotion(Chess::Piece::Queen->new($coords_to_square{join ' ', $x, $y}, "white", "White Queen"));
+	# }
+
 	my $result = $game->result();
+
+
 
 	if($count % 2) {
 		$message = "It's white's turn";
