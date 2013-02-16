@@ -7,21 +7,26 @@ $, = " ";
 $\ = "\n";
 
 sub findmoves {
+	
 	my $game = shift;
 	my @moves;
+	
 	for my $piece (@{$game->get_pieces()}) {
 
 		for my $square ($piece->reachable_squares()) {
 
 			if ($game->is_move_legal($piece->get_current_square(), $square)) {
+				
 				push @moves, join ' ', $piece->get_current_square(), $square;
 				print join ' ', $piece->get_current_square(), $square;
+				
 			}
 		}
 
 	}
 
 	return @moves;
+	
 }
 
 sub evaluate {
@@ -103,7 +108,7 @@ sub computer_move {
 
 	}
 
-	return $moves[0];
+	return pop @moves;
 
 }
 
