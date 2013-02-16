@@ -83,15 +83,19 @@ sub apply {
 }
 
 sub computer_move {
-
+	
 	my $game = shift;
 	my @moves;
+	my $board = $game->get_board();
 
 	for my $piece (@{$game->get_pieces()}) {
 
 		for my $square ($piece->reachable_squares()) {
 
 			if ($game->is_move_legal($piece->get_current_square(), $square)) {
+				if(defined($board->get_piece_at($square))) {
+					return join ' ', $piece->get_current_square(), $square;
+				}
 				push @moves, join ' ', $piece->get_current_square(), $square;
 			}
 
@@ -99,49 +103,7 @@ sub computer_move {
 
 	}
 
-	my $best_move = $moves[0];
-
-	$evaluation = evaluate(apply($game->clone(), $best_move));
-
-	%moves_to_value;
-
-	for my $move (@moves) {
-
-		# $cloned_game = $game->clone();
-		# apply($cloned_game, $move);
-		# @moves_p;
-
-		# for my $piece (@{$cloned_game->get_pieces()}) {
-
-		# 	for my $square ($piece->reachable_squares()) {
-
-		# 		if ($cloned_game->is_move_legal($piece->get_current_square(), $square)) {
-		# 			push @moves_p, join ' ', $piece->get_current_square(), $square;
-		# 		}
-
-		# 	}
-
-		# }
-
-		# $moves_to_value{$move} = evaluate(apply($cloned_game->clone(), $move_p[0]));
-
-		# for my $move_p (@moves_p) {
-		# 	$value = evaluate(apply($cloned_game->clone(), $move_p));
-		# 	$moves_to_value{$move} = $moves_to_value{$move} < $value ? $moves_to_value{$move} : $value;
-		# }
-
-		$best_move = $evaluation < evaluate(apply($game->clone(), $move)) ? $move : $best_move;
-		$evaluation = evaluate(apply($game->clone(), $best_move));
-
-	}
-
-	# my $best_move = shift (keys %moves_to_value);
-
-	# for my $move (keys %moves_to_value) {
-	# 	$best_move = $moves_to_value{$best_move} < $moves_to_value{$move} ? $best_move : $move;
-	# }
-
-	return $best_move;
+	return $moves[0];
 
 }
 
