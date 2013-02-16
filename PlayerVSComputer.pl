@@ -2,7 +2,6 @@
 
 use Tkx;
 use Chess::Game;
-use Chess::Piece::Queen;
 
 $, = " ";
 $\ = "\n";
@@ -156,6 +155,30 @@ my %coords;
 my $mw = Tkx::widget->new(".");
 $mw->g_wm_title("My chess");
 
+my $canvas = $mw->new_tk__canvas(-width => 500, -height => 500);
+$canvas->g_grid(-column=>0, -row=>0, -sticky=>"nwes");
+$mw->g_grid_columnconfigure(0, -weight=>1);
+$mw->g_grid_rowconfigure(0, -weight=>1);
+
+$canvas->g_bind("<1>", [sub {my ($x,$y) = @_; $lastx=25 + $x - $x % 50; $lasty=25 + $y - $y % 50;}, Tkx::Ev("%x","%y")]);
+$canvas->g_bind("<ButtonRelease-1>", [sub {my ($x, $y) = @_; check_place($x, $y)}, Tkx::Ev("%x", "%y")]);
+
+for(my $i = 1; $i < 9; $i+=1) {
+
+	for(my $j = 1; $j < 9; $j+=1) {
+
+		if(($i + $j) % 2) {
+			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#8b4513");
+		}
+
+		else {
+			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#eedd82");
+		}
+
+	}
+
+}
+
 Tkx::image_create_photo("black_rook1", -file => "rook_b.gif", -width => 45, -height => 45);
 Tkx::image_create_photo("black_knight1", -file => "horse_b.gif", -width => 45, -height => 45);
 Tkx::image_create_photo("black_bishop1", -file => "bishop_b.gif", -width => 45, -height => 45);
@@ -261,30 +284,6 @@ $coords{"425 375"} = "pawn_w8";
 my $message = "White's are first";
 my $em = $mw->new_ttk__label(-textvariable => \$message);
 $em->g_grid(-column => 0, -row => 1, -sticky => "we");
-
-my $canvas = $mw->new_tk__canvas(-width => 500, -height => 500);
-$canvas->g_grid(-column=>0, -row=>0, -sticky=>"nwes");
-$mw->g_grid_columnconfigure(0, -weight=>1);
-$mw->g_grid_rowconfigure(0, -weight=>1);
-
-$canvas->g_bind("<1>", [sub {my ($x,$y) = @_; $lastx=25 + $x - $x % 50; $lasty=25 + $y - $y % 50;}, Tkx::Ev("%x","%y")]);
-$canvas->g_bind("<ButtonRelease-1>", [sub {my ($x, $y) = @_; check_place($x, $y)}, Tkx::Ev("%x", "%y")]);
-
-for(my $i = 1; $i < 9; $i+=1) {
-
-	for(my $j = 1; $j < 9; $j+=1) {
-
-		if(($i + $j) % 2) {
-			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#8b4513");
-		}
-
-		else {
-			$canvas->create_rectangle(50 * $i, 50 * $j, 50 + 50 * $i, 50 + 50 * $j, -fill => "#eedd82");
-		}
-
-	}
-
-}
 
 my %coords_to_square = (
 	"75 75", "a8", "125 75", "b8", "175 75", "c8", "225 75", "d8", "275 75", "e8", "325 75", "f8", "375 75", "g8", "425 75", "h8",
